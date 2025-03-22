@@ -1,4 +1,5 @@
 const track = require("../model/track.model");
+const { axiosInstance } = require("../axios/axios");
 
 // create a new track
 const createTrack = async (req, res) => {
@@ -66,11 +67,57 @@ const fetchTracks = async (req, res) => {
       message: "Error while getting user data from the database",
       error: error.message,
     });
-    
+  }
+};
+
+const axiosData = async (req, res) => {
+  try {
+    const response = await axiosInstance.get("/data");
+
+    if (response.status === 200) {
+      return res.status(200).json({
+        success: true,
+        message: "data fetched successfully",
+        data: response.data,
+      });
+    }
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Error while fetching data",
+      error: error.message,
+      error: error,
+    });
+  }
+};
+
+const axiosGetUserById = async (req, res) => {
+  try {
+    const userId = req.params.userId;
+    const response = await axiosInstance.get(`/userId/${userId}`);
+
+    if (response.status === 200) {
+      return res.status(200).json({
+        success: true,
+        message: "data fetched successfully",
+        data: response.data,
+      });
+    }
+  } catch (error) {
+    if (error.response.status === 500) {
+      return res.status(500).json({
+        success: false,
+        message: "Error while fetching data",
+        error: error.message,
+        error: error,
+      });
+    }
   }
 };
 
 module.exports = {
   createTrack,
   fetchTracks,
+  axiosData,
+  axiosGetUserById,
 };
